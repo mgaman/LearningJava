@@ -5,6 +5,7 @@ public class Serial1 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		System.out.println("Looking for port "+args[0]);
 		SerialPort [] ports = SerialPort.getCommPorts();
 		int foundPort = -1;
 		for (int i=0;i<ports.length;i++)
