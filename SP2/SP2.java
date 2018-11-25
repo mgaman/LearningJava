@@ -12,6 +12,7 @@ public class SP2 {
 		}
 		else
 			System.out.println("No ports found");
+		System.out.println("Done...");
 	}
 
 }
