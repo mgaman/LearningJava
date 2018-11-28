@@ -12,15 +12,22 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.swt.custom.StyledText;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 
 public class MainWindow {
 
 	protected Shell shlMyFirstWin;
 	private Text UsernameText;
 	private Text PasswordText;
-
+	private int counter = 0;
+	
 	private String userName = null;
 	private String password = null;
+	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
 
 	/**
 	 * Launch the application.
@@ -55,9 +62,10 @@ public class MainWindow {
 	 */
 	protected void createContents() {
 		shlMyFirstWin = new Shell();
+		shlMyFirstWin.setBackground(SWTResourceManager.getColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 		shlMyFirstWin.setImage(SWTResourceManager.getImage("C:\\Users\\david\\Downloads\\images\\java.png"));
-		shlMyFirstWin.setSize(230, 264);
-		shlMyFirstWin.setText("My First Win App");
+		shlMyFirstWin.setSize(304, 408);
+		shlMyFirstWin.setText("My First App");
 		
 		CLabel lblNewLabel = new CLabel(shlMyFirstWin, SWT.NONE);
 		lblNewLabel.setImage(SWTResourceManager.getImage("C:\\Users\\david\\Downloads\\images\\java.png"));
@@ -66,7 +74,7 @@ public class MainWindow {
 		
 		Label lblUserName = new Label(shlMyFirstWin, SWT.NONE);
 		lblUserName.setBounds(27, 131, 55, 15);
-		lblUserName.setText("UserName");
+		lblUserName.setText("Username");
 		
 		Label lblPassword = new Label(shlMyFirstWin, SWT.NONE);
 		lblPassword.setBounds(27, 158, 55, 15);
@@ -81,13 +89,19 @@ public class MainWindow {
 		Button btnLogin = new Button(shlMyFirstWin, SWT.NONE);
 		btnLogin.setBounds(98, 182, 75, 25);
 		btnLogin.setText("Login");
+		
+		StyledText styledText = new StyledText(shlMyFirstWin, SWT.V_SCROLL | SWT.BORDER | SWT.WRAP );
+		styledText.setBounds(46, 213, 178, 95);
+		formToolkit.adapt(styledText);
+		formToolkit.paintBordersFor(styledText);
 
 		btnLogin.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event) {
  
                 userName = UsernameText.getText();
                 password = PasswordText.getText();
- 
+                styledText.append(String.format("Line %d\n", counter++));
+                styledText.setTopIndex(styledText.getLineCount() - 1);  // forces cursor to the end
                 if (userName == null || userName.isEmpty() || password == null || password.isEmpty()) {
                     String errorMsg = null;
                     MessageBox messageBox = new MessageBox(shlMyFirstWin, SWT.OK | SWT.ICON_ERROR);
@@ -106,7 +120,7 @@ public class MainWindow {
                     MessageBox messageBox = new MessageBox(shlMyFirstWin, SWT.OK | SWT.ICON_WORKING);
                     messageBox.setText("Info");
                     messageBox.setMessage("Valid");
-                    messageBox.open();
+              //      messageBox.open();
                 }
             }
         });
