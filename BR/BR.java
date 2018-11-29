@@ -17,21 +17,20 @@ public class BR {
 			if (ports[i].getSystemPortName().equals(args[0]))
 				foundPort = i;
 		}
-		System.out.println("Using port " + foundPort);
+	//	System.out.println("Using port " + foundPort);
+		foundPort = 0;
 		ports[foundPort].openPort();
+		// data arrives at 1Hz  so set timeout just over 1 sec
+		ports[foundPort].setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 1100, 0);
 		InputStreamReader isr = new InputStreamReader(ports[foundPort].getInputStream());
 		BufferedReader br = new BufferedReader(isr);
-		String line;
     	while (true)
 	    {
 		   try
 		   {
-			   line = br.readLine();
-			   if (!line.isEmpty())
-				   System.out.println(line);
+			   System.out.println(br.readLine());
 		   }
-		   catch (Exception e){
-			   
+		   catch (Exception e){			   
 		   }
 	    }
 	}
