@@ -1,4 +1,5 @@
 package com.jcg.rca.main;
+import com.fazecast.jSerialComm.*;
 
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -17,6 +18,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Combo;
 
 public class MainWindow {
 
@@ -28,7 +30,8 @@ public class MainWindow {
 	private String userName = null;
 	private String password = null;
 	private final FormToolkit formToolkit = new FormToolkit(Display.getDefault());
-
+    private SerialPort [] allPorts;
+    private int SPIndex = -1;  // index to allPorts
 	/**
 	 * Launch the application.
 	 * @param args
@@ -69,7 +72,7 @@ public class MainWindow {
 		
 		CLabel lblNewLabel = new CLabel(shlMyFirstWin, SWT.NONE);
 		lblNewLabel.setImage(SWTResourceManager.getImage("C:\\Users\\david\\Downloads\\images\\java.png"));
-		lblNewLabel.setBounds(66, 10, 86, 105);
+		lblNewLabel.setBounds(100, 10, 86, 105);
 		lblNewLabel.setText("");
 		
 		Label lblUserName = new Label(shlMyFirstWin, SWT.NONE);
@@ -91,9 +94,53 @@ public class MainWindow {
 		btnLogin.setText("Login");
 		
 		StyledText styledText = new StyledText(shlMyFirstWin, SWT.V_SCROLL | SWT.BORDER | SWT.WRAP );
-		styledText.setBounds(46, 213, 178, 95);
+		styledText.setBounds(10, 213, 268, 118);
 		formToolkit.adapt(styledText);
 		formToolkit.paintBordersFor(styledText);
+		
+		Combo comboSerialPorts = new Combo(shlMyFirstWin, SWT.NONE);
+		comboSerialPorts.setBounds(10, 337, 91, 55);
+		formToolkit.adapt(comboSerialPorts);
+		formToolkit.paintBordersFor(comboSerialPorts);
+		
+		Button btnOpenSerial = new Button(shlMyFirstWin, SWT.NONE);
+		btnOpenSerial.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// disable button so cant be pressed twice
+				btnOpenSerial.setEnabled(false);
+				// open the comport indicated by the combo box
+				SPIndex = comboSerialPorts.getSelectionIndex();
+				styledText.append(String.format("Selected index %d\n", SPIndex));
+				
+				if (SPIndex >= 0)
+				{
+					allPorts[SPIndex].openPort();
+					allPorts[SPIndex].addDataListener(new SerialPortDataListener() {
+						   @Override
+						   public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
+						   @Override
+						   public void serialEvent(SerialPortEvent event)
+						   {
+						      if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
+						         return;
+						      byte[] newData = new byte[allPorts[SPIndex].bytesAvailable()];
+						      int numRead = allPorts[SPIndex].readBytes(newData, newData.length);
+//                              styledText.append("Read " + numRead + " bytes.\n"); // not here as it causes a thread exception
+						   }
+						});
+				}
+			}
+		});
+		btnOpenSerial.setBounds(123, 335, 75, 25);
+		formToolkit.adapt(btnOpenSerial, true, true);
+		btnOpenSerial.setText("Open Serial");
+		
+		allPorts = SerialPort.getCommPorts();
+		for (int i=0; i<allPorts.length; i++)
+		{
+			comboSerialPorts.add(allPorts[i].getSystemPortName());
+		}
 
 		btnLogin.addListener(SWT.Selection, new Listener() {
             public void handleEvent(Event event) {
