@@ -11,7 +11,7 @@ public class ImageArray {
 	protected Shell shlImagearray;
 	protected int index = 0;
 //	protected String basepath = "C:\\Users\\david\\Downloads\\images\\";
-	protected String basepath = "Images/";  // relative to project base
+	protected String basepath = "Images/";  //  relative to project base
 	/* Launch the application.
 	 * @param args
 	 */
