@@ -7,12 +7,17 @@ public class SP2 {
 		// TODO Auto-generated method stub
 		System.out.println("Starting..");
 		SerialPort [] allPorts = SerialPort.getCommPorts();
+		int index = -1;
 		if (allPorts.length > 0)
 		{
 			for (int i=0;i<allPorts.length;i++)
+			{
 				System.out.println("Index " + i + "," + allPorts[i].getSystemPortName());
+				if (allPorts[i].getSystemPortName().equals(args[0]))
+					index = i;
+			}
 			
-			SerialPort comPort = SerialPort.getCommPorts()[0];
+			SerialPort comPort = SerialPort.getCommPorts()[index];
 			comPort.openPort();
 			// data sent at 1Hz rate so set timeout just over 1 sec
 			comPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1100, 0);  // works
@@ -23,7 +28,7 @@ public class SP2 {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 			try
 			{
-			   for (int j = 0; j < 100; ++j)
+			   for (int j = 0; j < 1000000; j++)
 			   {
 			      System.out.println(reader.readLine());
 			      System.out.println(j);
