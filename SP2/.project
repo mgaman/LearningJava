@@ -14,4 +14,10 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<variableList>
+		<variable>
+			<name>JAR_STORE</name>
+			<value>file:/C:/Users/david/Downloads/JavaLib</value>
+		</variable>
+	</variableList>
 </projectDescription>
