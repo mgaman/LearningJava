@@ -18,6 +18,8 @@ public class Serial1 {
 		}
 		SerialPort comport = ports[foundPort];
 		comport.openPort();
+		// data sent at 1Hz rate so set timeout just over 1 sec
+	//	comport.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1100, 0);  // works
 		comport.addDataListener(new SerialPortDataListener() {
 			@Override
 			   public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
@@ -26,10 +28,16 @@ public class Serial1 {
 			   {
 			      if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
 			         return;
-			      byte[] newData = new byte[comport.bytesAvailable()];
-			      int numRead = comport.readBytes(newData, newData.length);
-			      System.out.print(new String(newData));
-			    //  System.out.println("Read " + numRead + " bytes.");
+			      if (comport.bytesAvailable() > 0)
+			      {
+				      byte[] newData = new byte[comport.bytesAvailable()];
+				      int numRead = comport.readBytes(newData, newData.length);
+			    //	  System.out.println("Read " + numRead + " bytes.");
+				      if (numRead > 0)
+				      {
+				    	  System.out.print(new String(newData));
+				      }			    	  
+			      }
 			   }	
 		});
 		while (true) {}
