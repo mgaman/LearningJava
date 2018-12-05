@@ -131,19 +131,24 @@ public class SerialDisplayMain extends JFrame {
 		ascButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// output the text in the text field
-				String txt = textField.getText();
-				if (crCheckBox.isSelected())
-					txt += "\r";
-				if (lfCheckBox.isSelected())
-					txt += "\n";
-				byte [] msg = txt.getBytes();
-				ports[portIndex].writeBytes(msg, msg.length);
+				if (portIndex >= 0)  // port is open
+				{
+					String txt = textField.getText();
+					if (crCheckBox.isSelected())
+						txt += "\r";
+					if (lfCheckBox.isSelected())
+						txt += "\n";
+					byte [] msg = txt.getBytes();
+					ports[portIndex].writeBytes(msg, msg.length);					
+				}
 			}
 		});
 
 		numButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// convert text field to array of int, if OK send as array of byte 
+				if (portIndex >= 0)  // port is open
+				{
 				try {
 					byte [] msg = new byte [1];
 					msg[0] = (byte)Integer.parseUnsignedInt(textField.getText());
@@ -152,6 +157,7 @@ public class SerialDisplayMain extends JFrame {
 				catch (NumberFormatException  ex)
 				{
 					
+				}
 				}
 			}
 		});
