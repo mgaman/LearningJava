@@ -16,6 +16,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Arrays;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import java.awt.Color;
@@ -104,7 +106,8 @@ public class SerialDisplayMain extends JFrame {
 							      if (numRead > 0)
 							      {
 							    //	  System.out.print(new String(newData));
-							    	  textArea.append(new String(newData));
+//							    	  textArea.append(new String(newData));
+							    	  textArea.append(new String(Arrays.copyOfRange(newData, 0, numRead)));
 							      }			    	  
 						      }
 						   }
