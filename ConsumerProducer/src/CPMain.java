@@ -7,43 +7,14 @@ public class CPMain {
     BlockingQueue<String> q =
         new LinkedBlockingQueue<String>();
 
-    Thread p1 = new Thread(new Producer(q));
+    Thread p1 = new Thread(new Producer(q,args[0]));
     Thread c1 = new Thread(new Consumer(q));
-    /*
-    Thread c2 = new Thread(new Consumer(q));
-    Thread c3 = new Thread(new Consumer(q));
-    Thread c4 = new Thread(new Consumer(q));
-    Thread c5 = new Thread(new Consumer(q));
-    Thread c6 = new Thread(new Consumer(q));
-    Thread c7 = new Thread(new Consumer(q));
-    Thread c8 = new Thread(new Consumer(q));
-    Thread c9 = new Thread(new Consumer(q));
-*/
-    
+    p1.setPriority(c1.getPriority()+1);    
     p1.start();
     c1.start();
-    /*
-    c2.start();
-    c3.start();
-    c4.start();
-    c5.start();
-    c6.start();
-    c7.start();
-    c8.start();
-    c9.start();
-*/ 
     p1.join();
     c1.join();
-    /*
-    c2.join();
-    c3.join();
-    c4.join();
-    c5.join();
-    c6.join();
-    c7.join();
-    c8.join();
-    c9.join();
-      */ 
     System.out.println("Done.");
+    while (true) {}
   }
 }

@@ -12,8 +12,10 @@ public class Consumer implements Runnable {
           ("Start " + Thread.currentThread().getName());
        
        String value = queue.take();
-       while (!value.equals("*")) {
-         System.out.println(Thread.currentThread().getName()+": " + value );
+       while (true) {
+//         System.out.println(Thread.currentThread().getName()+": " + value );
+//         System.out.print(Thread.currentThread().getName()+": " + value );
+         System.out.print(value);
          /*
               do something with value
          */     
