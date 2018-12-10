@@ -36,7 +36,7 @@ public class SerialDisplayMain extends JFrame {
 	private int portIndex = -1;  // -1 indicates nothing chosen
 	private JComboBox<String> portsComboBox;
 	private JTextArea textArea;
-	private JTextField txtOut;
+	private JTextField txNumber;
 	private JCheckBox crCheckBox;
 	private JCheckBox lfCheckBox;
 	private JButton ascButton;
@@ -51,6 +51,10 @@ public class SerialDisplayMain extends JFrame {
 	private JLabel lblNewLabel_1;
 	private JLabel lblSubscriber;
 	private JLabel lblSMS;
+	private boolean nextLineSMS = false;
+	private boolean debug = true;
+	private JTextField txSMS;
+
 	/**
 	 * Launch the application.
 	 */
@@ -72,39 +76,13 @@ public class SerialDisplayMain extends JFrame {
 	 */
 	public SerialDisplayMain() {
 		
-		// CNMI=m,n    m 1,2,3 n 2 so sms appears right away
-		String [] initModem = {"ATE0","AT+CMGF=1","AT+CNMI=1,2"};
-		String nextResponse = "";
+//		String nextResponse = "";
 		initComponents();
 		createEvents();
 		pState = eState.IDLE;
 		lblState.setText(pState.toString());
 		
 		getline.linemode = true;
-/*
-    	while (true)
-
-		{
-			nextResponse = getline.getNext();
-			if (nextResponse != null)
-			{
-				if (nextResponse.startsWith("RING"))
-				{
-					pState = eState.RINGING;
-					lblState.setText(pState.toString());
-				}
-				else if (nextResponse.startsWith("+CLIP:"))
-				{
-					
-				}
-				else if (nextResponse.startsWith("+CMT:"))
-				{
-					pState = eState.SMSIN;
-					lblState.setText(pState.toString());
-				}
-			}
-		}	
-		*/
 	}
 
 	private void createEvents() {
@@ -133,6 +111,18 @@ public class SerialDisplayMain extends JFrame {
 				{
 			//		s = String.format("Port %s opened",ports[portIndex].getSystemPortName());
 			//		JOptionPane.showMessageDialog(null, s);
+					// CNMI=m,n    m 1,2,3 n 2 so sms appears right away
+					String [] initModem = {"ATE0\r","AT+CMGF=1\r","AT+CNMI=1,2\r"};
+					for (int i=0;i<initModem.length;i++)
+					{
+						writeString(initModem[i]);
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
 					ports[portIndex].addDataListener(new SerialPortDataListener() {
 						   @Override
 						   public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
@@ -148,17 +138,21 @@ public class SerialDisplayMain extends JFrame {
 						    //	  System.out.println("Read " + numRead + " bytes.");
 							      if (numRead > 0)
 							      {
-							    //	  System.out.print(new String(newData));
-//							    	  textArea.append(new String(newData));
 							    	  byte [] slice = Arrays.copyOfRange(newData, 0, numRead);
 							    	  textArea.append(new String(slice));
 							    	  
 							    	  getline.addRaw(slice);
 							    	  String next = getline.getNext();
-							    	  boolean nextLineSMS = false;
 							    	  while (next != null)
 							    	  {
-							    		  if (next.startsWith("OK"))
+							    		  if(next.equals(">"))
+							    		  {
+							    			  writeString(txSMS.getText());
+							    			  byte [] bs = {26};
+							    			  ports[portIndex].writeBytes(bs,1);
+							    			  getline.linemode = true;
+							    		  }
+							    		  else if (next.startsWith("OK"))
 							    		  {
 							    			 switch (pState)
 							    			 {
@@ -203,8 +197,7 @@ public class SerialDisplayMain extends JFrame {
 							    			  }
 							    		  }
 							    		  next = getline.getNext();
-							    	  }
-							    	
+							    	  }							    	
 							      }			    	  
 						      }
 						   }
@@ -233,13 +226,11 @@ public class SerialDisplayMain extends JFrame {
 				// output the text in the text field
 				if (portIndex >= 0)  // port is open
 				{
-					String txt = txtOut.getText();
+					String txt = txNumber.getText();
 					if (crCheckBox.isSelected())
 						txt += "\r";
 					if (lfCheckBox.isSelected())
 						txt += "\n";
-			//		byte [] msg = txt.getBytes();
-			//		ports[portIndex].writeBytes(msg, msg.length);	
 					writeString(txt);
 				}
 			}
@@ -250,35 +241,47 @@ public class SerialDisplayMain extends JFrame {
 				// convert text field to array of int, if OK send as array of byte 
 				if (portIndex >= 0)  // port is open
 				{
-				try {
-					byte [] msg = new byte [1];
-					msg[0] = (byte)Integer.parseUnsignedInt(txtOut.getText());
-					ports[portIndex].writeBytes(msg, msg.length);
-				}
-				catch (NumberFormatException  ex)
-				{
-					
-				}
+					try {
+						byte [] msg = new byte [1];
+						msg[0] = (byte)Integer.parseUnsignedInt(txNumber.getText());
+						ports[portIndex].writeBytes(msg, msg.length);
+					}
+					catch (NumberFormatException  ex)
+					{
+						
+					}
 				}
 			}
 		});
 
 		btnGreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				switch (pState)
+				if (txSMS.getText().length() == 0)
 				{
-					case RINGING:
-						pState = eState.ANSWERING;
-						lblState.setText(pState.toString());
-						writeString("ATA\r");
-						break;
-					case IDLE:
-						pState = eState.DIALLING;
-						lblState.setText(pState.toString());
-						writeString("ATD" + txtOut.getText() + ";\r");
-						break;
-					default:
-						break;
+					// dialling a number
+					switch (pState)
+					{
+						case RINGING:
+							pState = eState.ANSWERING;
+							lblState.setText(pState.toString());
+							writeString("ATA\r");
+							break;
+						case IDLE:
+							pState = eState.DIALLING;
+							lblState.setText(pState.toString());
+							writeString("ATD" + txNumber.getText() + ";\r");
+							break;
+						default:
+							break;
+					}
+				}
+				else
+				{
+					// sending an SMS
+					pState = eState.SMSOUT;
+					lblState.setText(pState.toString());
+					getline.linemode = false;
+					writeString("AT+CMGS=\"" + txNumber.getText() + "\"\r");
 				}
 			}
 		});
@@ -307,8 +310,8 @@ public class SerialDisplayMain extends JFrame {
 		
 		JScrollPane scrollPane = new JScrollPane();
 		
-		txtOut = new JTextField();
-		txtOut.setColumns(10);
+		txNumber = new JTextField();
+		txNumber.setColumns(10);
 		
 		crCheckBox = new JCheckBox("CR");
 		
@@ -331,6 +334,13 @@ public class SerialDisplayMain extends JFrame {
 		lblSubscriber = new JLabel("");
 		
 		lblSMS = new JLabel("SMS:");
+		
+		JLabel lblNewLabel_2 = new JLabel("Number");
+		
+		JLabel lblNewLabel_3 = new JLabel("Text");
+		
+		txSMS = new JTextField();
+		txSMS.setColumns(10);
 
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
@@ -341,9 +351,6 @@ public class SerialDisplayMain extends JFrame {
 					.addComponent(portButton)
 					.addContainerGap(283, Short.MAX_VALUE))
 				.addComponent(scrollPane, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
-				.addGroup(gl_contentPane.createSequentialGroup()
-					.addComponent(txtOut, GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
-					.addContainerGap())
 				.addGroup(gl_contentPane.createSequentialGroup()
 					.addComponent(crCheckBox)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
@@ -369,6 +376,16 @@ public class SerialDisplayMain extends JFrame {
 							.addPreferredGap(ComponentPlacement.UNRELATED)
 							.addComponent(lblSubscriber, GroupLayout.PREFERRED_SIZE, 108, GroupLayout.PREFERRED_SIZE)))
 					.addGap(55))
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(2)
+					.addComponent(lblNewLabel_2)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(txNumber, GroupLayout.PREFERRED_SIZE, 130, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(lblNewLabel_3)
+					.addPreferredGap(ComponentPlacement.UNRELATED)
+					.addComponent(txSMS, GroupLayout.PREFERRED_SIZE, 114, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(95, Short.MAX_VALUE))
 		);
 		gl_contentPane.setVerticalGroup(
 			gl_contentPane.createParallelGroup(Alignment.LEADING)
@@ -379,7 +396,11 @@ public class SerialDisplayMain extends JFrame {
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 223, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(txtOut, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel_2)
+						.addComponent(txNumber, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel_3)
+						.addComponent(txSMS, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
 						.addComponent(crCheckBox)
@@ -427,5 +448,7 @@ public class SerialDisplayMain extends JFrame {
 	{
 		byte [] r = s.getBytes();
 		ports[portIndex].writeBytes(r, r.length);
+		if (debug)
+			System.out.println(s);
 	}
 }

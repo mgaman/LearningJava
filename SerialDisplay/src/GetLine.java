@@ -27,7 +27,6 @@ public class GetLine {
 			}
 			else
 			{
-				linemode = true; // linemode only for 1 char at a time
 				tempString = "";
 				tempString += (char)rawData[i];
 				q.add(tempString);
