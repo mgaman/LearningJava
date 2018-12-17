@@ -49,7 +49,9 @@ public class SerialWindow extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				sh.portOpen(comboBox.getSelectedItem().toString());
 			}
-		});		
+		});	
+		// get notification of serial data
+		sh
 	}
 
 	private void initComponents() {
