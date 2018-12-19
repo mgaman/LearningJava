@@ -33,10 +33,11 @@ public class SerialWindow extends JFrame/* implements SerialListener */ {
 	private SerialHandler sh = new SerialHandler();
 	private JButton btnPort;
 	private JComboBox comboBox;
-	protected JTextArea textArea;
 	protected JLabel lblNewLabel;
 	protected static String addition = "";
-
+	private JTextArea textArea;
+	private boolean paused = false; 
+	private JButton btnNewButton;
 	/**
 	 * Launch the application.
 	 */
@@ -87,7 +88,8 @@ public class SerialWindow extends JFrame/* implements SerialListener */ {
 								// The type we pass to publish() is determined
 								// by the second template parameter.
 								if (addition != "") {
-									publish(addition);
+									if (!paused)
+										publish(addition);
 								//	System.out.print(addition);
 									addition = "";
 								}
@@ -114,8 +116,6 @@ public class SerialWindow extends JFrame/* implements SerialListener */ {
 					//			System.out.println(chunks.get(i));
 							}
 							chunks.clear();
-
-							lblNewLabel.setText("l " + size);
 						}
 
 					};
@@ -144,19 +144,28 @@ public class SerialWindow extends JFrame/* implements SerialListener */ {
 		btnPort = new JButton("Open");
 		btnPort.setBounds(128, 10, 117, 23);
 		contentPane.add(btnPort);
-
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(20, 43, 575, 215);
+		contentPane.add(scrollPane);
+		
 		textArea = new JTextArea();
 		textArea.setBackground(Color.BLACK);
-		textArea.setForeground(Color.GREEN);
-		textArea.setBounds(20, 42, 432, 209);
-		contentPane.add(textArea);
-
-		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-
-		lblNewLabel = new JLabel("New label");
-		lblNewLabel.setBounds(302, 14, 110, 14);
-		contentPane.add(lblNewLabel);
+		textArea.setForeground(Color.YELLOW);
+		scrollPane.setViewportView(textArea);
+		
+		btnNewButton = new JButton("Pause");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (paused)
+					btnNewButton.setText("Pause");
+				else
+					btnNewButton.setText("Continue");
+				paused = !paused;
+			}
+		});
+		btnNewButton.setBounds(257, 9, 114, 25);
+		contentPane.add(btnNewButton);
 
 		String[] portNames = sh.getSystemComPortNames();
 		for (int i = 0; i < portNames.length; i++)
