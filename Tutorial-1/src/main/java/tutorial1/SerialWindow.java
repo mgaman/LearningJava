@@ -27,7 +27,7 @@ import javax.swing.border.BevelBorder;
 import java.awt.Color;
 import javax.swing.JLabel;
 
-public class SerialWindow extends JFrame/* implements SerialListener*/ {
+public class SerialWindow extends JFrame/* implements SerialListener */ {
 
 	private JPanel contentPane;
 	private SerialHandler sh = new SerialHandler();
@@ -36,7 +36,7 @@ public class SerialWindow extends JFrame/* implements SerialListener*/ {
 	protected JTextArea textArea;
 	protected JLabel lblNewLabel;
 	protected static String addition = "";
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -65,67 +65,67 @@ public class SerialWindow extends JFrame/* implements SerialListener*/ {
 		});
 		initComponents();
 		createEvents();
-		
+
 	}
 
-	
 	private void createEvents() {
 		// TODO Auto-generated method stub
 		btnPort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (sh.portOpen(comboBox.getSelectedItem().toString()))
-				{
+				if (sh.portOpen(comboBox.getSelectedItem().toString())) {
 					btnPort.setEnabled(false);
 					SerialListener sl = new CollectSerialData();
 					sh.setListener(sl);
-					 SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
-						 @Override
-						 protected Boolean doInBackground() throws Exception {
-						  // Simulate doing something useful.
-							 int x = 100;
-						  while (x < 1000) {
-						   Thread.sleep(1000);
+					SwingWorker<Boolean, String> worker = new SwingWorker<Boolean, String>() {
+						@Override
+						protected Boolean doInBackground() throws Exception {
+							// Simulate doing something useful.
+							int x = 100;
+							while (x < 1000) {
+								Thread.sleep(900);
 
-						   // The type we pass to publish() is determined
-						   // by the second template parameter.
-						   	if (addition != null)
-						   	{
-							   publish(addition);
-							   addition = null;
-						   	}
-						  }
+								// The type we pass to publish() is determined
+								// by the second template parameter.
+								if (addition != "") {
+									publish(addition);
+								//	System.out.print(addition);
+									addition = "";
+								}
+							}
+							// Here we can return some object of whatever type
+							// we specified for the first template parameter.
+							// (in this case we're auto-boxing 'true').
+							return true;
+						}
 
-						  // Here we can return some object of whatever type
-						  // we specified for the first template parameter.
-						  // (in this case we're auto-boxing 'true').
-						  return true;
-						 }
+						// Can safely update the GUI from this method.
+						protected void done() {
+						}
 
-						 // Can safely update the GUI from this method.
-						 protected void done() {
-						 }
+						@Override
+						// Can safely update the GUI from this method.
+						protected void process(List<String> chunks) {
+							// Here we receive the values that we publish().
+							// They may come grouped in chunks.
+							// String mostRecentValue = chunks.get(chunks.size()-1);
+							int size = chunks.size();
+							for (int i = 0; i < chunks.size(); i++) {
+								textArea.append(chunks.get(i));
+					//			System.out.println(chunks.get(i));
+							}
+							chunks.clear();
 
-						 @Override
-						 // Can safely update the GUI from this method.
-						 protected void process(List<String> chunks) {
-						  // Here we receive the values that we publish().
-						  // They may come grouped in chunks.
-						  String mostRecentValue = chunks.get(chunks.size()-1);
-						  int size = chunks.size();
-						  textArea.append(mostRecentValue);
-						  lblNewLabel.setText("l " + size);
-						 }
+							lblNewLabel.setText("l " + size);
+						}
 
-						};
+					};
 
-						worker.execute();				
-				}
-				else
-				{
+					worker.execute();
+				} else {
 					System.out.println("Failed to open serial port");
 				}
 			}
-		});		
+		});
 	}
 
 	private void initComponents() {
@@ -136,30 +136,30 @@ public class SerialWindow extends JFrame/* implements SerialListener*/ {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		comboBox = new JComboBox();
-		comboBox.setBounds(10, 11, 66, 20);
+		comboBox.setBounds(10, 11, 106, 20);
 		contentPane.add(comboBox);
-		
+
 		btnPort = new JButton("Open");
-		btnPort.setBounds(84, 10, 66, 23);
+		btnPort.setBounds(128, 10, 117, 23);
 		contentPane.add(btnPort);
-		
+
 		textArea = new JTextArea();
 		textArea.setBackground(Color.BLACK);
 		textArea.setForeground(Color.GREEN);
 		textArea.setBounds(20, 42, 432, 209);
 		contentPane.add(textArea);
-		
-		DefaultCaret caret = (DefaultCaret)textArea.getCaret();
+
+		DefaultCaret caret = (DefaultCaret) textArea.getCaret();
 		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-		
+
 		lblNewLabel = new JLabel("New label");
-		lblNewLabel.setBounds(178, 14, 46, 14);
+		lblNewLabel.setBounds(302, 14, 110, 14);
 		contentPane.add(lblNewLabel);
-		
-		String [] portNames = sh.getSystemComPortNames();
-		for (int i=0;i<portNames.length;i++)
+
+		String[] portNames = sh.getSystemComPortNames();
+		for (int i = 0; i < portNames.length; i++)
 			comboBox.addItem(portNames[i]);
 	}
 }
