@@ -15,14 +15,11 @@ public class SerialHandler {
 	private SerialPort [] ports;
 	private int portIndex;
 	private String [] namesArray;
-	private final BlockingQueue<String> queue;  // put received data on this queue
-	private List _listeners = new ArrayList();  // list of listeners for data
-	
+	private SerialListener listener;
 	public SerialHandler()
 	{
 		ports = SerialPort.getCommPorts();
 		portIndex = -1;
-		queue =  new LinkedBlockingQueue<String>();
 	}
 	
 	public String [] getSystemComPortNames()
@@ -36,9 +33,9 @@ public class SerialHandler {
 	public void portClose()
 	{
 		if (portIndex != -1)
-			ports[portIndex].closePort();
-		
+			ports[portIndex].closePort();		
 	}
+	
 	public boolean portOpen(String name)
 	{
 		boolean rc = false;
@@ -69,10 +66,12 @@ public class SerialHandler {
 					      {
 					    	  byte [] slice = Arrays.copyOfRange(newData, 0, numRead);
 					    	//  System.out.print(new String(slice));
-					    	  Iterator listeners = _listeners.iterator();
-					          while( listeners.hasNext() ) {
-					              ( (SerialListener) listeners.next() ).dataReceived(slice  );
-					          }
+				//	    	  Iterator listeners = _listeners.iterator();
+					//          while( listeners.hasNext() ) {
+					  //            ( (SerialListener) listeners.next() ).dataReceived(slice  );
+					     //     }
+					    	  if (listener != null)
+					    		  listener.dataReceived(slice);
 					      }			    	  
 				      }
 				   }
@@ -82,12 +81,12 @@ public class SerialHandler {
 		return rc;
 	}
 	
-	public synchronized void addListener( SerialListener l ) {
-        _listeners.add( l );
+	public synchronized void setListener( SerialListener l ) {
+		listener = l;
     }
     
     public synchronized void removeListener( SerialListener l ) {
-        _listeners.remove( l );
+    	listener = null;
     }
     
 }
