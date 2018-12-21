@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/david/Downloads/JavaLib/jSerialComm-2.3.0.jar"/>
+	<classpathentry kind="lib" path="/home/susan/Downloads/JavaLib/jSerialComm-2.3.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
