@@ -26,7 +26,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 
-import javazoom.jl.player.Player; 
+import javazoom.jl.player.Player;
+import javazoom.jl.player.advanced.AdvancedPlayer;
+import javazoom.jl.player.advanced.PlaybackEvent;
+import javazoom.jl.player.advanced.PlaybackListener; 
  
  
 /*
@@ -34,20 +37,30 @@ import javazoom.jl.player.Player;
  *  
  * Using JLayer library (jl1.0.1.jar) 
  */ 
- 
+/**
+ *  @author David Henry
+ *  @version 0.1
+ *  @param URL The URL of the file to be played
+ *  @param volume A float number between 0 and 1 - ignored
+ */
 public class Mp3Player { 
     private URL url; 
     private float volume; 
     private Player player;  
+    private AdvancedPlayer aplayer;
     public boolean isPlaying = false;
     // constructor that takes the name of an MP3 resource and the volume 
     public Mp3Player(URL url, float volume) { 
         this.url = url; 
         this.volume = volume; 
     } 
- 
+ /**
+  * @return void
+  * @param none
+  */
     public void close() {  
-     if (player != null) 
+ //    if (player != null) 
+    if (aplayer != null)
       player.close();  
      isPlaying = false;
     } 
@@ -56,7 +69,19 @@ public class Mp3Player {
     public void play() { 
         try { 
             BufferedInputStream bis = new BufferedInputStream(url.openStream()); 
-            player = new Player(bis/*, volume*/); 
+       //    player = new Player(bis/*, volume*/); 
+            aplayer = new AdvancedPlayer(bis);
+            aplayer.setPlayBackListener(new PlaybackListener() {
+            	@Override
+            	public void playbackFinished(PlaybackEvent e)
+            	{
+            		System.out.println("Finished");
+            	}
+            	public void playbackStarted(PlaybackEvent e)
+            	{
+            		System.out.println("Started");
+            	}
+           });
         } 
         catch (Exception e) { 
             System.out.println("Problem playing file " + url); 
@@ -67,7 +92,8 @@ public class Mp3Player {
         new Thread() { 
             public void run() { 
                 try {  
-                 player.play(); 
+              //   player.play(); 
+                 aplayer.play();
                  isPlaying = true;
                 } 
                 catch (Exception e) {  
