@@ -20,13 +20,18 @@ import javafx.event.ActionEvent;  // use this insted of AWT event
 public class MainController implements Initializable {
 	@FXML private MediaView mv;
 	@FXML private Slider volume;
-	private MediaPlayer mp;
-	private Media me;
+	private MediaPlayer mp,map;
+	private Media me,ma;
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		// TODO Auto-generated method stub
-		String path = new File("src/media/Nokia.mp4").getAbsolutePath();
-		me = new Media(new File(path).toURI().toString());
+		// AUDIO MEDIA
+		String a_name = new File("src/media/0743.mp3").getAbsolutePath();
+		ma = new Media(new File(a_name).toURI().toString());
+		map = new MediaPlayer(ma);
+		map.setAutoPlay(false);
+		// VIDEO MEDIA
+		String v_name = new File("src/media/Nokia.mp4").getAbsolutePath();
+		me = new Media(new File(v_name).toURI().toString());
 		mp = new MediaPlayer(me);
 		mv.setMediaPlayer(mp);
 		volume.setValue(mp.getVolume()*volume.getMax());
@@ -53,6 +58,12 @@ public class MainController implements Initializable {
 			System.out.println(e.toString());
 		}
 	//	mp.setAutoPlay(true);
+	}
+	@FXML
+	void playaudio(ActionEvent ev)
+	{
+		map.seek(mp.getStartTime());
+		map.play();
 	}
 	@FXML
 	void play(ActionEvent ev)
