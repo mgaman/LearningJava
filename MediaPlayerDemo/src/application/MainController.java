@@ -44,6 +44,15 @@ public class MainController implements Initializable {
 		String v_name = new File("src/media/Hands.mp4").getAbsolutePath();
 		me = new Media(new File(v_name).toURI().toString());
 		mp = new MediaPlayer(me);
+		mp.setOnEndOfMedia(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+			//	mp.dispose();
+			}
+			
+		});
 		mv.setMediaPlayer(mp);
 		volume.setValue(mp.getVolume()*volume.getMax());
 		volume.valueProperty().addListener(new InvalidationListener() {
@@ -109,5 +118,32 @@ public class MainController implements Initializable {
 	{
 		mp.seek(mp.getTotalDuration());
 		mp.stop();
+	}
+	String phone = "0545919886";
+	boolean isRunning = false;
+	public void dial(ActionEvent ev)
+	{
+		String prefix = "src/media/audiocheck.net_dtmf_";
+		MediaPlayer map = null;
+		for (int i=0;i<phone.length();i++)
+		{
+			while (isRunning) {}
+			String finalName = prefix + phone.substring(i, i+1) + ".wav";
+			System.out.println(finalName);
+			String a_name = new File(finalName).getAbsolutePath();			
+			Media ma = new Media(new File(a_name).toURI().toString());
+			map = new MediaPlayer(ma);
+			map.setOnEndOfMedia(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					isRunning = false;	
+				}				
+			});
+			map.setAutoPlay(false);
+			isRunning = true;
+			map.play();
+		}
 	}
 }

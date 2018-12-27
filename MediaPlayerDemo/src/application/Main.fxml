@@ -26,4 +26,7 @@
          </children>
       </HBox>
    </bottom>
+   <left>
+      <Button mnemonicParsing="false" onAction="#dial" text="Dial" BorderPane.alignment="CENTER" />
+   </left>
 </BorderPane>
