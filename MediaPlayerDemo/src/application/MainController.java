@@ -59,46 +59,38 @@ public class MainController implements Initializable {
 		}
 	//	mp.setAutoPlay(true);
 	}
-	@FXML
-	void playaudio(ActionEvent ev)
+	public void playaudio(ActionEvent ev)
 	{
 		map.seek(mp.getStartTime());
 		map.play();
 	}
-	@FXML
-	void play(ActionEvent ev)
+	public void play(ActionEvent ev)
 	{
 		mp.play();
 	}
-	@FXML
-	void pause(ActionEvent ev)
+	public void pause(ActionEvent ev)
 	{
 		mp.pause();
 	}
-	@FXML
-	void fast(ActionEvent ev)
+	public void fast(ActionEvent ev)
 	{
 		mp.setRate(2);
 	}
-	@FXML
-	void slow(ActionEvent ev)
+	public void slow(ActionEvent ev)
 	{
 		mp.setRate(0.5);
 	}
-	@FXML
-	void reload(ActionEvent ev)
+	public void reload(ActionEvent ev)
 	{
 		mp.seek(mp.getStartTime());
 		mp.play();
 	}
-	@FXML
-	void start(ActionEvent ev)
+	public void start(ActionEvent ev)
 	{
 		mp.seek(mp.getStartTime());
 		mp.stop();
 	}
-	@FXML
-	void last(ActionEvent ev)
+	public void last(ActionEvent ev)
 	{
 		mp.seek(mp.getTotalDuration());
 		mp.stop();
