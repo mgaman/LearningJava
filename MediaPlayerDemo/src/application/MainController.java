@@ -15,7 +15,8 @@ import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
-import javafx.event.ActionEvent;  // use this insted of AWT event
+import javafx.util.Duration;
+import javafx.event.ActionEvent;  // use this instead of AWT event
 
 public class MainController implements Initializable {
 	@FXML private MediaView mv;
@@ -29,8 +30,18 @@ public class MainController implements Initializable {
 		ma = new Media(new File(a_name).toURI().toString());
 		map = new MediaPlayer(ma);
 		map.setAutoPlay(false);
+		map.setOnEndOfMedia(new Runnable () {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				System.out.println("End of audio");
+				// rewind & play again
+				//map.seek(mp.getStartTime());
+				map.seek(Duration.ZERO);
+			}			
+		});
 		// VIDEO MEDIA
-		String v_name = new File("src/media/Nokia.mp4").getAbsolutePath();
+		String v_name = new File("src/media/Hands.mp4").getAbsolutePath();
 		me = new Media(new File(v_name).toURI().toString());
 		mp = new MediaPlayer(me);
 		mv.setMediaPlayer(mp);
@@ -58,6 +69,10 @@ public class MainController implements Initializable {
 			System.out.println(e.toString());
 		}
 	//	mp.setAutoPlay(true);
+	}
+	public void stopaudio(ActionEvent ev)
+	{
+		map.stop();
 	}
 	public void playaudio(ActionEvent ev)
 	{

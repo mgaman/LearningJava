@@ -21,7 +21,8 @@
             <Button mnemonicParsing="false" onAction="#start" text="Start" />
             <Button mnemonicParsing="false" onAction="#last" text="Last" />
             <Slider fx:id="volume" />
-            <Button mnemonicParsing="false" onAction="#playaudio" text="Audio" />
+            <Button mnemonicParsing="false" onAction="#playaudio" text="Audio Start" wrapText="true" />
+            <Button mnemonicParsing="false" onAction="#stopaudio" text="Audio Stop" wrapText="true" />
          </children>
       </HBox>
    </bottom>
