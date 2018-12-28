@@ -9,9 +9,12 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -21,6 +24,7 @@ import javafx.event.ActionEvent;  // use this instead of AWT event
 public class MainController implements Initializable {
 	@FXML private MediaView mv;
 	@FXML private Slider volume;
+	@FXML private TextField txtPhone;
 	private MediaPlayer mp,map;
 	private Media me,ma;
 	@Override
@@ -119,31 +123,30 @@ public class MainController implements Initializable {
 		mp.seek(mp.getTotalDuration());
 		mp.stop();
 	}
-	String phone = "0545919886";
-	boolean isRunning = false;
 	public void dial(ActionEvent ev)
 	{
+		String phone = txtPhone.getText();
 		String prefix = "src/media/audiocheck.net_dtmf_";
-		MediaPlayer map = null;
+		String suffix = ".wav";
+		ObservableList<Media> mediaList = FXCollections.observableArrayList();
 		for (int i=0;i<phone.length();i++)
 		{
-			while (isRunning) {}
-			String finalName = prefix + phone.substring(i, i+1) + ".wav";
-			System.out.println(finalName);
-			String a_name = new File(finalName).getAbsolutePath();			
-			Media ma = new Media(new File(a_name).toURI().toString());
-			map = new MediaPlayer(ma);
-			map.setOnEndOfMedia(new Runnable() {
-
-				@Override
-				public void run() {
-					// TODO Auto-generated method stub
-					isRunning = false;	
-				}				
-			});
-			map.setAutoPlay(false);
-			isRunning = true;
-			map.play();
+			mediaList.add(new Media(new File(new File(prefix + phone.substring(i, i+1) + suffix).getAbsolutePath()).toURI().toString()));
 		}
+        playMediaTracks(mediaList);
 	}
+	private void playMediaTracks(ObservableList<Media> mediaList) {
+        if (mediaList.size() == 0)
+            return;
+
+        MediaPlayer mediaplayer = new MediaPlayer(mediaList.remove(0));
+        mediaplayer.play();
+
+        mediaplayer.setOnEndOfMedia(new Runnable() {
+            @Override
+            public void run() {
+                playMediaTracks(mediaList);
+            }
+        });
+    }
 }
