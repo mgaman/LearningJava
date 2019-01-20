@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.FlowPane?>
+
+<FlowPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.Window2Controller">
+   <children>
+      <TextArea fx:id="namesList" prefHeight="200.0" prefWidth="200.0" />
+      <Button mnemonicParsing="false" onMouseClicked="#listDB" text="List DB" />
+   </children>
+</FlowPane>
