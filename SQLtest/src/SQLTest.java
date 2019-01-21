@@ -27,9 +27,6 @@ class SelectApp {
    }
 
    
-   /**
-    * select all rows in the warehouses table
-    */
    public void selectAll(){
        String sql = "SELECT * FROM info";
        
@@ -93,11 +90,11 @@ public class SQLTest {
 
 	public static void main(String[] args) {
 		SelectApp app = new SelectApp();
-//		app.insert("saba", "0545919886");
- //       app.insert("safta", "0545289886");
+//		app.insert("Saba", "0545919886");
+ //      app.insert("Safta", "0545289886");
    //     app.insert("naomi", "05256585"); 
     //    app.update("naomi", "99999"); 
-        app.delete("naomi");
+  //      app.delete("naomi");
         app.selectAll();
     }
 }
