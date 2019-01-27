@@ -243,7 +243,7 @@ public class GedcomToSQL {
 				if (indivPending)
 				{
 					indivPending = false;
-	//				emitIndividual();
+					emitIndividual();
 					currentIndividual.clear();
 				}
 				indivCount++;
@@ -393,11 +393,13 @@ public class GedcomToSQL {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
-		try {
+/*
+ 		try {
 			stmt.execute("Delete from Individual;");
 		} catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+*/
 		try {
 			FileInputStream fstream = new FileInputStream("src/Data/transfer.ged");
 			// Get the object of DataInputStream
