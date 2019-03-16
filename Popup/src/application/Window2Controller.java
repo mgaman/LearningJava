@@ -21,7 +21,7 @@ public class Window2Controller implements Initializable{
 	ResultSet rs = null;
 	String path = null;
 	String sql;
-	
+	private AppendLines listener;
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		// TODO Auto-generated method stub
@@ -39,6 +39,10 @@ public class Window2Controller implements Initializable{
 		}
 	}
 
+	public void setListener(AppendLines l) {
+		listener = l;
+	}
+	
 	public void listDB()
 	{
 		System.out.println("W2 listDB");
@@ -54,6 +58,7 @@ public class Window2Controller implements Initializable{
 			while (rs.next()) {
 			//	System.out.println(rs.getString("name"));
 				namesList.appendText(rs.getString("name") + "\r\n");
+				listener.addLine(rs.getString("name") + "\r\n");
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
